@@ -73,15 +73,12 @@ class Item {
                 System.out.println("Restored " + power + " health points!");
                 break;
             case DEFENSE:
-                // Implement temporary defense boost
                 System.out.println("Defense increased by " + power + " for the next battle!");
                 break;
             case ATTACK:
-                // Implement temporary attack boost
                 System.out.println("Attack increased by " + power + " for the next battle!");
                 break;
             case UTILITY:
-                // Implement utility effects
                 System.out.println("Used " + name + "!");
                 break;
         }
@@ -91,7 +88,6 @@ class Item {
         }
     }
 
-    // Getters
     public String getName() { return name; }
     public String getDescription() { return description; }
     public ItemType getType() { return type; }
@@ -118,7 +114,6 @@ class ItemFactory {
     public static Item createRandomItem(int playerLevel) {
         Random random = new Random();
 
-        // Higher level players have better chance for rare items
         boolean isRare = random.nextDouble() < (0.1 * playerLevel);
 
         Item[] sourceArray = isRare ? RARE_ITEMS : COMMON_ITEMS;
@@ -129,10 +124,8 @@ class ItemFactory {
         List<Item> items = new ArrayList<>();
         Random random = new Random();
 
-        // Always include at least one health item
         items.add(COMMON_ITEMS[0]);
 
-        // Add 2-4 random items
         int itemCount = random.nextInt(3) + 2;
         for (int i = 0; i < itemCount; i++) {
             items.add(createRandomItem(playerLevel));
@@ -173,7 +166,6 @@ class Ability {
         if (currentCooldown > 0) currentCooldown--;
     }
 
-    // Getters
     public String getName() { return name; }
     public String getDescription() { return description; }
     public AttackType getType() { return type; }
@@ -218,7 +210,6 @@ class Player {
     }
 
     public void levelUp(Scanner scanner) {
-        // Handle the experience calculation properly
         this.experience -= this.experienceToNextLevel;
         this.experienceToNextLevel = (int)(this.experienceToNextLevel * 1.2);
 
@@ -226,11 +217,9 @@ class Player {
         int oldMaxHealth = maxHealth;
         int oldDamage = currentWeapon.getPower();
 
-        // Automatically increase both damage and health
-        int damageIncrease = 3 + (level / 3); // Scales with level: 3 at early levels, more at higher levels
-        int healthIncrease = 20 + (level * 2); // Scales with level: 20+ at early levels, more at higher levels
+        int damageIncrease = 3 + (level / 3);
+        int healthIncrease = 20 + (level * 2);
 
-        // Apply upgrades
         currentWeapon = new Weapon(currentWeapon.getName(),
                 currentWeapon.getPower() + damageIncrease,
                 currentWeapon.getDefenseType(),
@@ -238,13 +227,11 @@ class Player {
                 currentWeapon.getLevel());
 
         maxHealth += healthIncrease;
-        health = maxHealth; // Restore health to new max
+        health = maxHealth;
         baseDefense += 2;
 
-        // Unlock abilities
         unlockAbilities();
 
-        // Display level up information
         System.out.println(ConsoleColors.GREEN +
                 "╔══════════════════════════════════════╗\n" +
                 "║            LEVEL UP!                 ║\n" +
@@ -266,7 +253,7 @@ class Player {
         System.out.println("- Base Defense: " + (baseDefense - 2) + " → " + baseDefense);
         System.out.println("- Next level requires: " + experienceToNextLevel + " experience");
 
-        sleep(3000); // Give player time to read the upgrades
+        sleep(3000);
     }
 
     private void unlockAbilities() {
@@ -497,15 +484,15 @@ enum ThreatType {
     MALWARE("Malware",
             "Malicious software designed to corrupt files and steal data silently.",
             "executes malicious code",
-            80, 13),
+            70, 13),
     SQL_INJECTION("SQL Injection",
             "An attack that attempts to manipulate your database by injecting malicious SQL code.",
             "injects malicious SQL commands",
-            70, 14),
+            65, 13),
     DOS("DoS Attack",
             "Denial of Service attack that overwhelms your system with traffic.",
             "floods the network",
-            100, 12),
+            100, 15),
     XSS("Cross-Site Script",
             "Malicious script that hijacks user sessions and steals cookies.",
             "injects malicious scripts",
@@ -517,15 +504,15 @@ enum ThreatType {
     ZERO_DAY("Zero Day Exploit",
             "A previously unknown vulnerability that leaves your system exposed.",
             "exploits unknown vulnerability",
-            120, 15),
+            100, 12),
     ROOTKIT("Rootkit",
             "Advanced malware that hides deep in your system to maintain unauthorized access.",
             "attempts to gain root access",
-            90, 14),
+            80, 15),
     RANSOMWARE("Ransomware",
             "Malicious software that encrypts your files and demands payment.",
             "starts encrypting files",
-            110, 15),
+            100, 15),
     SOCIAL_ENGINEERING("Social Engineering",
             "Psychological manipulation techniques to trick users into security mistakes.",
             "attempts social manipulation",
@@ -568,7 +555,6 @@ class ThreatFactory {
         ThreatType[] types = ThreatType.values();
         ThreatType selectedType = types[random.nextInt(types.length)];
 
-        // Scale threat based on player level
         int health = (int)(selectedType.getBaseHealth() * (1 + 0.1 * playerLevel));
         int damage = (int)(selectedType.getBaseDamage() * (1 + 0.1 * playerLevel));
 
@@ -602,7 +588,6 @@ class Threat {
         this.threatType = threatType;
     }
 
-    // Add this method to get detailed information about the threat
     public String getDetailedDescription() {
         return String.format("""
             ╔══════════════════════════════════════╗
@@ -620,7 +605,6 @@ class Threat {
     }
 
 
-    // Existing methods
     public String getName() {
         return name;
     }
@@ -637,7 +621,7 @@ class Threat {
         return experienceValue;
     }
 
-    public ThreatType getThreatType() {  // Fixed method name
+    public ThreatType getThreatType() {
         return threatType;
     }
 
@@ -675,7 +659,7 @@ class Game {
             boolean isBoss = (encounterCount % 10 == 0);
 
             if (isBoss) {
-                threat = createBossThreat();  // Fixed method name
+                threat = createBossThreat();
                 bossEncounter(threat);
             } else {
                 threat = ThreatFactory.createThreat(player.getLevel());
@@ -683,7 +667,6 @@ class Game {
             }
 
             if (player.getHealth() > 0) {
-                // Check for level up and handle it properly - using while loop for multiple level ups
                 while (player.shouldLevelUp()) {
                     player.levelUp(scanner);
                 }
@@ -715,7 +698,7 @@ class Game {
         System.out.println(ConsoleColors.CYAN + "╚══════════════════════════════════════╝" + ConsoleColors.RESET);
     }
 
-    private Threat createBossThreat() {  // Fixed method name
+    private Threat createBossThreat() {
         ThreatType[] bossTypes = {ThreatType.ZERO_DAY, ThreatType.RANSOMWARE, ThreatType.ROOTKIT};
         ThreatType selectedType = bossTypes[random.nextInt(bossTypes.length)];
 
@@ -889,7 +872,7 @@ class Game {
             ║         THREAT ELIMINATED!           ║""" + ConsoleColors.RESET);
         System.out.printf("║ Experience gained: %d           %n", threat.getExperienceValue());
 
-        int creditsFound = 10 + random.nextInt(20);
+        int creditsFound = 10 + random.nextInt(60);
         player.addMoney(creditsFound);
         System.out.printf("║ Credits found: %d              %n", creditsFound);
 
